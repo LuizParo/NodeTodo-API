@@ -25,7 +25,14 @@ app.get('/todos', (req, res) => {
 });
 
 app.get('/todos/:id', (req, res) => {
+    var filteredTodo = todos.filter(todo => todo.id == req.params.id);
+    var todo = filteredTodo[0];
 
+    if(!todo) {
+        res.status(404).send();
+        return;
+    }
+    res.json(todo);
 });
 
 app.listen(PORT, () => console.log(`Running server on port ${PORT}`));
