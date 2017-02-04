@@ -25,7 +25,7 @@ app.get('/todos', (req, res) => {
 });
 
 app.get('/todos/:id', (req, res) => {
-    var filteredTodo = todos.filter(todo => todo.id == req.params.id);
+    var filteredTodo = todos.filter(todo => todo.id === parseInt(req.params.id));
     var todo = filteredTodo[0];
 
     if(!todo) {
