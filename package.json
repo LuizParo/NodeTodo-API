@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/LuizParo/NodeTodo-API#readme",
   "dependencies": {
+    "body-parser": "^1.16.0",
+    "consign": "^0.1.2",
     "express": "^4.14.1"
   }
 }
