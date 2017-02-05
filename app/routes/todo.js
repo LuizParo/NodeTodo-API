@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = app => {
+module.exports = function(app) {
     let api = new app.api.TodoApi();
 
     app.get('/', api.info);
@@ -8,4 +8,6 @@ module.exports = app => {
     app.get('/todos', api.listAll);
 
     app.get('/todos/:id', api.findById);
+
+    app.post('/todos', api.save);
 };

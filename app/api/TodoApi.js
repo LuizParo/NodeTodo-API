@@ -1,39 +1,41 @@
 'use strict';
 
-let todos = [{
-    id : 1,
-    description : 'Meet mom for lunch',
-    completed : false
-}, {
-    id : 2,
-    description : 'Go to market',
-    completed : false
-}, {
-    id : 3,
-    description : 'Feed the cat',
-    completed : true
-}];
+let todos = [];
+let nextTodoId = 0;
 
-class TodoApi {
+let TodoApi = function() {};
 
-    info(req, res) {
-        res.send('Todo API Root');
-    }
+TodoApi.prototype.info = function(req, res) {
+    res.send('Todo API Root');
+};
     
-    listAll(req, res) {
-        res.json(todos);
+TodoApi.prototype.listAll = function(req, res) {
+    res.json(todos);
+};
+
+TodoApi.prototype.findById = function(req, res) {
+    let filteredTodo = todos.filter(todo => todo.id === parseInt(req.params.id));
+    let todo = filteredTodo[0];
+
+    if(!todo) {
+        res.status(404).send();
+        return;
     }
+    res.json(todo);
+};
 
-    findById(req, res) {
-        let filteredTodo = todos.filter(todo => todo.id === parseInt(req.params.id));
-        let todo = filteredTodo[0];
+TodoApi.prototype.save = function(req, res) {
+    let body = req.body;
 
-        if(!todo) {
-            res.status(404).send();
-            return;
-        }
-        res.json(todo);
-    }
-}
+    todos.push({
+        id : ++nextTodoId,
+        description : body.description,
+        completed : body.completed
+    });
 
-module.exports = () => TodoApi;
+    res.sendStatus(201);
+};
+
+module.exports = function() {
+    return TodoApi;
+};
