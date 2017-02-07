@@ -39,6 +39,7 @@ TodoApi.prototype.save = function(req, res) {
         completed : body.completed
     });
 
+    res.location(`${req.get('host')}/todos/${nextTodoId}`);
     res.sendStatus(201);
 };
 
