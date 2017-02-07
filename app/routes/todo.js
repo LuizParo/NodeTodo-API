@@ -11,5 +11,7 @@ module.exports = function(app) {
 
     app.post('/todos', api.save);
 
+    app.put('/todos/:id', api.update);
+
     app.delete('/todos/:id', api.delete);
 };
