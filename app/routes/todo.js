@@ -10,4 +10,6 @@ module.exports = function(app) {
     app.get('/todos/:id', api.findById);
 
     app.post('/todos', api.save);
+
+    app.delete('/todos/:id', api.delete);
 };

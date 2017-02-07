@@ -19,7 +19,7 @@ TodoApi.prototype.findById = function(req, res) {
     let todo = _.findWhere(todos, {id : parseInt(req.params.id, 10)});
 
     if(!todo) {
-        res.status(404).send();
+        res.sendStatus(404);
         return;
     }
     res.json(todo);
@@ -40,6 +40,18 @@ TodoApi.prototype.save = function(req, res) {
     });
 
     res.sendStatus(201);
+};
+
+TodoApi.prototype.delete = function(req, res) {
+    let todo = _.findWhere(todos, {id : parseInt(req.params.id, 10)});
+
+    if(!todo) {
+        res.sendStatus(404);
+        return;
+    }
+
+    todos = _.without(todos, todo);
+    res.sendStatus(204);
 };
 
 module.exports = function() {
