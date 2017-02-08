@@ -12,7 +12,14 @@ TodoApi.prototype.info = function(req, res) {
 };
     
 TodoApi.prototype.listAll = function(req, res) {
-    res.json(todos);
+    let query = req.query;
+    let filteredTodos = todos;
+
+    if(query.hasOwnProperty('completed')) {
+        filteredTodos = _.where(todos, {completed : query.completed === 'true'});
+    }
+    
+    res.json(filteredTodos);
 };
 
 TodoApi.prototype.findById = function(req, res) {
