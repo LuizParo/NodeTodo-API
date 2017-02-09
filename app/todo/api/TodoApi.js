@@ -2,34 +2,32 @@
 
 let _ = require('underscore');
 
-let todos = [];
-let nextTodoId = 0;
-
-let TodoApi = function() {};
+let TodoApi = function(service) {
+    this._service = service;
+};
 
 TodoApi.prototype.info = function(req, res) {
     res.send('Todo API Root');
 };
-    
-TodoApi.prototype.listAll = function(req, res) {
-    let query = req.query;
-    let filteredTodos = todos;
 
-    if(query.hasOwnProperty('completed')) {
-        filteredTodos = _.where(todos, {completed : query.completed === 'true'});
-    }
-    
-    res.json(filteredTodos);
+TodoApi.prototype.list = function(req, res) {
+    this._service.list(req.query)
+        .then(function(todos) {
+            res.json(todos);
+        })
+        .catch(function(error) {
+            res.status(error.status).json(error.message);
+        });
 };
 
 TodoApi.prototype.findById = function(req, res) {
-    let todo = _.findWhere(todos, {id : parseInt(req.params.id, 10)});
-
-    if(!todo) {
-        res.sendStatus(404);
-        return;
-    }
-    res.json(todo);
+    this._service.findById(req.params.id)
+        .then(function(todo) {
+            res.json(todo);
+        })
+        .catch(function(error) {
+            res.status(error.status).json(error.message);
+        });
 };
 
 TodoApi.prototype.save = function(req, res) {
@@ -40,14 +38,15 @@ TodoApi.prototype.save = function(req, res) {
         return;
     }
 
-    todos.push({
-        id : ++nextTodoId,
-        description : body.description,
-        completed : body.completed
-    });
+    this._service.save(body)
+        .then(function(todoId) {
+            res.location(`${req.get('host')}/todos/${todoId}`);
+            res.sendStatus(201);
+        })
+        .catch(function(error) {
+            res.status(error.status).json(error.message);
+        });
 
-    res.location(`${req.get('host')}/todos/${nextTodoId}`);
-    res.sendStatus(201);
 };
 
 TodoApi.prototype.update = function(req, res) {
@@ -72,8 +71,13 @@ TodoApi.prototype.update = function(req, res) {
         return;
     }
 
-    _.extend(todo, {description : body.description, completed : body.completed});
-    res.sendStatus(204);
+    this._service.update(body)
+        .then(function() {
+            res.sendStatus(204);
+        })
+        .catch(function(error) {
+            res.status(error.status).json(error.message);
+        });
 };
 
 TodoApi.prototype.delete = function(req, res) {
