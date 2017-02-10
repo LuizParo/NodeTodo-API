@@ -2,13 +2,13 @@
 
 class ExtendableError extends Error {
 
-    constructor(message) {
+    constructor(message, status) {
         super();
 
         this.name = super.constructor.name;
 
         this._message = message;
-        this._status = 404;
+        this._status = status;
     }
 
     get message() {
