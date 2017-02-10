@@ -1,7 +1,8 @@
 'use strict';
 
 let _ = require('underscore');
-let TodoNotFoundException = require('../../exceptions/TodoNotFoundException');
+let TodoNotFoundException = require('../exceptions/TodoNotFoundException');
+let InvalidTodoException = require('../exceptions/InvalidTodoException');
 
 let nextId = 0;
 let todos = [];
@@ -38,7 +39,6 @@ TodoService.prototype.findById = function(id) {
             }
             resolve(todo);
         } catch (e) {
-            console.log(e.message);
             reject({
                 status : e.status || 500,
                 message : e.message
@@ -68,12 +68,51 @@ TodoService.prototype.save = function(todoDTO) {
     });
 };
 
-TodoService.prototype.update = function(todoDTO) {
+TodoService.prototype.update = function(id, todoDTO) {
     return new Promise(function(resolve, reject) {
-        _.extend(todo, {description : todoDTO.description, completed : todoDTO.completed});
-        resolve();
+        try {
+            let todo = _.findWhere(todos, {id : parseInt(id, 10)});
+
+            if(!todo) {
+                throw new TodoNotFoundException(`Todo with id ${id} not found!`);
+            }
+
+            if(!_.isBoolean(todoDTO.completed) || !_.isString(todoDTO.description) || !todoDTO.description.length) {
+                throw new InvalidTodoException(`Todo must have a valid 'description' and 'completed' status!`);
+            }
+
+            _.extend(todo, {description : todoDTO.description, completed : todoDTO.completed});
+            resolve();
+        } catch (e) {
+            console.log(e);
+            reject({
+                status : e.status || 500,
+                message : e.message
+            });
+        }
     });
-}
+};
+
+TodoService.prototype.delete = function(id) {
+    return new Promise(function(resolve, reject){
+        try {
+            let todo = _.findWhere(todos, {id : parseInt(id, 10)});
+
+            if(!todo) {
+                throw new TodoNotFoundException(`Todo with id ${id} not found!`);
+            }
+
+            todos = _.without(todos, todo);
+            resolve();
+        } catch (e) {
+            console.log(e);
+            reject({
+                status : e.status || 500,
+                message : e.message
+            });
+        }
+    });
+};
 
 module.exports = function() {
     return TodoService;
