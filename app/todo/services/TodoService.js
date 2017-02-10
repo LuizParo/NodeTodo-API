@@ -18,6 +18,12 @@ TodoService.prototype.list = function(filters) {
                 filteredTodos = _.where(todos, {completed : filters.completed === 'true'});
             }
 
+            if(filters.hasOwnProperty('q') && filters.q.length) {
+                filteredTodos = _.filter(filteredTodos, (todo) => todo.description
+                    .toLowerCase()
+                    .indexOf(filters.q.toLowerCase()) > -1);
+            }
+
             resolve(filteredTodos);
         } catch (e) {
             console.log(e);
