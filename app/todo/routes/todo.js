@@ -1,7 +1,10 @@
 'use strict';
 
 module.exports = function(app) {
-    let service = new app.todo.services.TodoService();
+    let todo = app.todo.models.Todo;
+    let validator = new app.todo.validators.TodoValidator();
+    let repository = new app.todo.repositories.TodoRepository(todo);
+    let service = new app.todo.services.TodoService(validator, repository);
     let api = new app.todo.api.TodoApi(service);
 
     app.get('/', api.info);

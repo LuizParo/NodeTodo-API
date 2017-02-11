@@ -22,10 +22,10 @@ TodoApi.prototype.list = function(req, res) {
 
 TodoApi.prototype.findById = function(req, res) {
     this._service.findById(req.params.id)
-        .then(function(todo) {
+        .then(todo => {
             res.json(todo);
         })
-        .catch(function(error) {
+        .catch(error => {
             res.status(error.status).json(error);
         });
 };

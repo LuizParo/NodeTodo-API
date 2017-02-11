@@ -4,10 +4,12 @@ let _ = require('underscore');
 let TodoNotFoundException = require('../exceptions/TodoNotFoundException');
 let InvalidTodoException = require('../exceptions/InvalidTodoException');
 
-let nextId = 0;
 let todos = [];
 
-function TodoService() {};
+function TodoService(validator, repository) {
+    this._validator = validator;
+    this._repository = repository;
+};
 
 TodoService.prototype.list = function(filters) {
     return new Promise(function(resolve, reject) {
@@ -36,42 +38,19 @@ TodoService.prototype.list = function(filters) {
 };
 
 TodoService.prototype.findById = function(id) {
-    return new Promise(function(resolve, reject) {
-        let todo = _.findWhere(todos, {id : parseInt(id, 10)}); 
-
-        try {
-            if(!todo) {
-                throw new TodoNotFoundException(`Todo with id ${id} not found!`);
-            }
-            resolve(todo);
-        } catch (e) {
-            reject({
-                status : e.status || 500,
-                message : e.message
-            });
-        }
-    });
+    return this._repository.findById(id)
+        .then(todo => this._validator.assertIfExists(todo, id))
+        .catch(error => _handleError(error));
 };
 
 TodoService.prototype.save = function(todoDTO) {
-    return new Promise(function(resolve, reject) {
-        try {
-            let todo = {
-                id : ++nextId,
-                description : todoDTO.description,
-                completed : todoDTO.completed
-            };
+    let todo = {
+        description : todoDTO.description,
+        completed : todoDTO.completed
+    };
 
-            todos.push(todo);
-            resolve(todo.id);
-        } catch (e) {
-            console.log(e);
-            reject({
-                status : e.status || 500,
-                message : e.message
-            });
-        }
-    });
+    return this._repository.save(todo)
+        .catch(error => _handleError(error));
 };
 
 TodoService.prototype.update = function(id, todoDTO) {
@@ -98,6 +77,15 @@ TodoService.prototype.update = function(id, todoDTO) {
         }
     });
 };
+
+function _handleError(error) {
+    console.log(error);
+
+    return {
+        status : error.status || 500,
+        message : error.message
+    };
+}
 
 TodoService.prototype.delete = function(id) {
     return new Promise(function(resolve, reject){
