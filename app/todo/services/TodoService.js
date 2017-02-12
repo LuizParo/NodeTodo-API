@@ -14,29 +14,8 @@ class TodoService {
     }
 
     list(filters) {
-        return new Promise(function(resolve, reject) {
-            try {
-                let filteredTodos = todos;
-
-                if(filters.hasOwnProperty('completed')) {
-                    filteredTodos = _.where(todos, {completed : filters.completed === 'true'});
-                }
-
-                if(filters.hasOwnProperty('q') && filters.q.length) {
-                    filteredTodos = _.filter(filteredTodos, (todo) => todo.description
-                        .toLowerCase()
-                        .indexOf(filters.q.toLowerCase()) > -1);
-                }
-
-                resolve(filteredTodos);
-            } catch (e) {
-                console.log(e);
-                reject({
-                    status : e.status || 500,
-                    message : e.message
-                });
-            }
-        });
+        return this._repository.findAll(filters)
+            .catch(error => this._handleError(error));
     }
 
     findById(id) {
