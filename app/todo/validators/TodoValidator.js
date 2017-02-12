@@ -13,7 +13,7 @@ class TodoValidator {
     }
 
     assertRowsNotEmpty(rows, id) {
-        if(!rows) {
+        if(rows === 0) {
             throw new TodoNotFoundException(`Todo with id ${id} not found!`);
         }
 

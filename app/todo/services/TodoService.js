@@ -1,11 +1,5 @@
 'use strict';
 
-let _ = require('underscore');
-let TodoNotFoundException = require('../exceptions/TodoNotFoundException');
-let InvalidTodoException = require('../exceptions/InvalidTodoException');
-
-let todos = [];
-
 class TodoService {
 
     constructor(validator, repository) {
@@ -33,28 +27,19 @@ class TodoService {
     }
 
     update(id, todoDTO) {
-        return new Promise(function(resolve, reject) {
-            try {
-                let todo = _.findWhere(todos, {id : parseInt(id, 10)});
+        let updatedTodo = {};
 
-                if(!todo) {
-                    throw new TodoNotFoundException(`Todo with id ${id} not found!`);
-                }
+        if(todoDTO.hasOwnProperty('description')) {
+            updatedTodo.description = todoDTO.description;
+        }
 
-                if(!_.isBoolean(todoDTO.completed) || !_.isString(todoDTO.description) || !todoDTO.description.length) {
-                    throw new InvalidTodoException(`Todo must have a valid 'description' and 'completed' status!`);
-                }
+        if(todoDTO.hasOwnProperty('completed')) {
+            updatedTodo.completed = todoDTO.completed;
+        }
 
-                _.extend(todo, {description : todoDTO.description, completed : todoDTO.completed});
-                resolve();
-            } catch (e) {
-                console.log(e);
-                reject({
-                    status : e.status || 500,
-                    message : e.message
-                });
-            }
-        });
+        return this._repository.findById(id)
+            .then(todo => this._validator.assertIfExists(todo, id))
+            .then(todo => todo.update(updatedTodo));
     }
 
     delete(id) {
