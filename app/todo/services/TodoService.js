@@ -14,14 +14,12 @@ class TodoService {
     }
 
     list(filters) {
-        return this._repository.findAll(filters)
-            .catch(error => this._handleError(error));
+        return this._repository.findAll(filters);
     }
 
     findById(id) {
         return this._repository.findById(id)
-            .then(todo => this._validator.assertIfExists(todo, id))
-            .catch(error => this._handleError(error));
+            .then(todo => this._validator.assertIfExists(todo, id));
     }
 
     save(todoDTO) {
@@ -31,7 +29,7 @@ class TodoService {
         };
 
         return this._repository.save(todo)
-            .catch(error => this._handleError(error));
+            .then(todo => todo.id);
     }
 
     update(id, todoDTO) {
@@ -78,15 +76,6 @@ class TodoService {
                 });
             }
         });
-    }
-
-    _handleError(error) {
-        console.log(error);
-
-        return {
-            status : error.status || 500,
-            message : error.message
-        };
     }
 }
 
