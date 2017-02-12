@@ -11,6 +11,14 @@ class TodoValidator {
 
         return todo;
     }
+
+    assertRowsNotEmpty(rows, id) {
+        if(!rows) {
+            throw new TodoNotFoundException(`Todo with id ${id} not found!`);
+        }
+
+        return rows;
+    }
 }
 
 module.exports = () => TodoValidator;

@@ -58,24 +58,8 @@ class TodoService {
     }
 
     delete(id) {
-        return new Promise(function(resolve, reject){
-            try {
-                let todo = _.findWhere(todos, {id : parseInt(id, 10)});
-
-                if(!todo) {
-                    throw new TodoNotFoundException(`Todo with id ${id} not found!`);
-                }
-
-                todos = _.without(todos, todo);
-                resolve();
-            } catch (e) {
-                console.log(e);
-                reject({
-                    status : e.status || 500,
-                    message : e.message
-                });
-            }
-        });
+        return this._repository.deleteById(id)
+            .then(rowsDeleted => this._validator.assertRowsNotEmpty(rowsDeleted, id));
     }
 }
 

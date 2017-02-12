@@ -29,6 +29,14 @@ class TodoRepository {
 
         return this._todo.findAll({where : where});
     }
+
+    deleteById(id) {
+        return this._todo.destroy({
+            where : {
+                id : id
+            }
+        });
+    }
 }
 
 module.exports = () => TodoRepository;
