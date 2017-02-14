@@ -23,6 +23,10 @@ class UserApi {
             message : error.message
         };
 
+        if(error.errors && error.errors.length) {
+            obj.errors = error.errors;
+        }
+
         res.status(obj.status).json(obj);
     }
 }
