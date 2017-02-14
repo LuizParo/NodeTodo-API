@@ -10,7 +10,9 @@ app.use(express.static('./public'));
 app.use(bodyParser.json());
 
 consign({cwd : 'app'})
-    .include('todo/models')
+    .include('utils')
+    
+    .then('todo/models')
     .then('todo/validators')
     .then('todo/repositories')
     .then('todo/services')

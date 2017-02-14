@@ -2,8 +2,9 @@
 
 class TodoApi {
 
-    constructor(service) {
+    constructor(service, errorHandler) {
         this._service = service;
+        this._errorHandler = errorHandler;
     }
 
     info(req, res) {
@@ -13,13 +14,19 @@ class TodoApi {
     list(req, res) {
         this._service.list(req.query)
             .then(todos => res.json(todos))
-            .catch(error => this._handleError(res, error));
+            .catch(error => {
+                let errorResponse = this._errorHandler.handle(error);
+                res.status(errorResponse.status).json(errorResponse);
+            });
     }
 
     findById(req, res) {
         this._service.findById(req.params.id)
             .then(todo => res.json(todo))
-            .catch(error => this._handleError(res, error));
+            .catch(error => {
+                let errorResponse = this._errorHandler.handle(error);
+                res.status(errorResponse.status).json(errorResponse);
+            });
     }
 
     save(req, res) {
@@ -30,30 +37,28 @@ class TodoApi {
                 res.location(`${req.get('host')}/todos/${todoId}`);
                 res.sendStatus(201);
             })
-            .catch(error => this._handleError(res, error));
+            .catch(error => {
+                let errorResponse = this._errorHandler.handle(error);
+                res.status(errorResponse.status).json(errorResponse);
+            });
     }
 
     update(req, res) {
         this._service.update(req.params.id, req.body)
             .then(() => res.sendStatus(204))
-            .catch(error=> this._handleError(res, error));
+            .catch(error => {
+                let errorResponse = this._errorHandler.handle(error);
+                res.status(errorResponse.status).json(errorResponse);
+            });
     }
 
     delete(req, res) {
         this._service.delete(req.params.id)
             .then(() => res.sendStatus(204))
-            .catch(error => this._handleError(res, error));
-    }
-
-    _handleError(res, error) {
-        console.log(error);
-
-        let obj = {
-            status : error.status || 500,
-            message : error.message
-        };
-
-        res.status(obj.status).json(obj);
+            .catch(error => {
+                let errorResponse = this._errorHandler.handle(error);
+                res.status(errorResponse.status).json(errorResponse);
+            });
     }
 }
 

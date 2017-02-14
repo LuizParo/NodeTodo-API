@@ -1,11 +1,13 @@
 'use strict';
 
 module.exports = app => {
+    let errorHandler = new app.utils.ErrorHandler();
+
     let todo = app.todo.models.Todo;
     let validator = new app.todo.validators.TodoValidator();
     let repository = new app.todo.repositories.TodoRepository(todo);
     let service = new app.todo.services.TodoService(validator, repository);
-    let api = new app.todo.api.TodoApi(service);
+    let api = new app.todo.api.TodoApi(service, errorHandler);
 
     app.get('/', api.info);
 
