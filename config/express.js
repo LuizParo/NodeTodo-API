@@ -16,6 +16,13 @@ consign({cwd : 'app'})
     .then('todo/services')
     .then('todo/api')
     .then('todo/routes')
+
+    .then('authentication/models')
+    .then('authentication/repositories')
+    .then('authentication/services')
+    .then('authentication/api')
+    .then('authentication/routes')
+    
     .into(app);
 
 module.exports = app;

@@ -4,21 +4,24 @@ let Sequelize = require('sequelize');
 let database = require('../../../config/database');
 
 module.exports = () => {
-    let Todo = database.define('todo', {
-        description : {
+    let User = database.define('User', {
+        email : {
             type : Sequelize.STRING,
             allowNull : false,
+            unique : true,
             validate : {
-                len : [1, 250]
+                isEmail : true
             }
         },
 
-        completed : {
-            type : Sequelize.BOOLEAN,
+        password : {
+            type : Sequelize.STRING,
             allowNull : false,
-            defaultValue : false
+            validate : {
+                len : [7, 100]
+            }
         }
     });
 
-    return Todo;
+    return User;
 };

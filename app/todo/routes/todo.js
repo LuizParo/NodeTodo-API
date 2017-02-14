@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(app) {
+module.exports = app => {
     let todo = app.todo.models.Todo;
     let validator = new app.todo.validators.TodoValidator();
     let repository = new app.todo.repositories.TodoRepository(todo);
