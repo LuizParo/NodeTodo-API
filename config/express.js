@@ -20,6 +20,7 @@ consign({cwd : 'app'})
     .then('todo/routes')
 
     .then('authentication/models')
+    .then('authentication/validators')
     .then('authentication/repositories')
     .then('authentication/services')
     .then('authentication/api')

@@ -9,6 +9,14 @@ class UserRepository {
     save(user) {
         return this._user.create(user);
     }
+
+    find(filters) {
+        return this._user.findOne({
+            where : {
+                email : filters.email
+            }
+        });
+    }
 }
 
 module.exports = () => UserRepository;

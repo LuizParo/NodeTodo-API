@@ -1,9 +1,11 @@
 'use strict';
 
 let Sequelize = require('sequelize');
-let database = require('../../../config/database');
 let bcrypt = require('bcrypt');
 let _ = require('underscore');
+
+let database = require('../../../config/database');
+let InvalidCredentialsException = require('../exceptions/InvalidCredentialsException');
 
 module.exports = () => {
     let User = database.define('User', {
@@ -49,9 +51,17 @@ module.exports = () => {
         },
 
         instanceMethods : {
-            toPublicJSON : () => {
+            toPublicJSON : function() {
                 let json = this.toJSON();
                 return _.pick(this, 'id', 'email', 'createdAt', 'updatedAt');
+            },
+
+            checkIfPasswordMatches : function(password) {
+                if(!bcrypt.compareSync(password, this.get('password_hash'))) {
+                    throw new InvalidCredentialsException('Invalid password');
+                }
+
+                return this;
             }
         }
     });
