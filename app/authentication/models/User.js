@@ -2,6 +2,8 @@
 
 let Sequelize = require('sequelize');
 let database = require('../../../config/database');
+let bcrypt = require('bcrypt');
+let _ = require('underscore');
 
 module.exports = () => {
     let User = database.define('User', {
@@ -14,11 +16,27 @@ module.exports = () => {
             }
         },
 
+        salt : {
+            type : Sequelize.STRING
+        },
+
+        password_hash : {
+            type : Sequelize.STRING
+        },
+
         password : {
-            type : Sequelize.STRING,
+            type : Sequelize.VIRTUAL,
             allowNull : false,
             validate : {
                 len : [7, 100]
+            },
+            set : function(value) {
+                let salt = bcrypt.genSaltSync(10);
+                let hashedPassword = bcrypt.hashSync(value, salt);
+
+                this.setDataValue('password', value);
+                this.setDataValue('salt', salt);
+                this.setDataValue('password_hash', hashedPassword);
             }
         }
     }, {
@@ -27,6 +45,13 @@ module.exports = () => {
                 if(typeof user.email === 'string') {
                     user.email = user.email.toLowerCase();
                 }
+            }
+        },
+
+        instanceMethods : {
+            toPublicJSON : () => {
+                let json = this.toJSON();
+                return _.pick(this, 'id', 'email', 'createdAt', 'updatedAt');
             }
         }
     });
