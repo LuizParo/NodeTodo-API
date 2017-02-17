@@ -1,5 +1,6 @@
 'use strict';
 
+let InvalidTokenException = require('../exceptions/InvalidTokenException');
 let UserNotFoundException = require('../exceptions/UserNotFoundException');
 
 class UserValidator {
@@ -17,6 +18,14 @@ class UserValidator {
     assertIfExists(user, email) {
         if(user == null) {
             throw new UserNotFoundException(`User with email ${email} not found!`);
+        }
+
+        return user;
+    }
+
+    validateIfUserWasFoundByToken(user) {
+        if(user == null) {
+            throw new InvalidTokenException('Unauthorized request! Log in before continue!');
         }
 
         return user;

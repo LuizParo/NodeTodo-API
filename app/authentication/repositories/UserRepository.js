@@ -17,6 +17,10 @@ class UserRepository {
             }
         });
     }
+
+    findByToken(token) {
+        return this._user.findByToken(token);
+    }
 }
 
 module.exports = () => UserRepository;

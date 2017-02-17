@@ -11,20 +11,22 @@ app.use(bodyParser.json());
 
 consign({cwd : 'app'})
     .include('utils')
-    
-    .then('todo/models')
-    .then('todo/validators')
-    .then('todo/repositories')
-    .then('todo/services')
-    .then('todo/api')
-    .then('todo/routes')
 
     .then('authentication/models')
     .then('authentication/validators')
     .then('authentication/repositories')
     .then('authentication/services')
+    .then('authentication/factories')
     .then('authentication/api')
     .then('authentication/routes')
+    
+    .then('todo/models')
+    .then('todo/validators')
+    .then('todo/repositories')
+    .then('todo/services')
+    .then('todo/factories')
+    .then('todo/api')
+    .then('todo/routes')
     
     .into(app);
 

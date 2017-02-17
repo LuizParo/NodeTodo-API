@@ -52,6 +52,32 @@ module.exports = () => {
             }
         },
 
+        classMethods : {
+            findByToken : function(token) {
+                return new Promise((resolve, reject) => {
+                    try {
+                        if(!token) {
+                            reject({
+                                status : 400,
+                                message : `'auth' header wasn't provided!`
+                            });
+                        }
+
+                        let decodedJwt = jwt.verify(token, 'qwerty098');
+                        let bytes = cryptojs.AES.decrypt(decodedJwt.token, 'abc123!@#!');
+                        let tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
+
+                        resolve(User.findById(tokenData.id));
+                    } catch(error) {
+                        reject({
+                            status : 500,
+                            message : error.message
+                        });
+                    }
+                });
+            }
+        },
+
         instanceMethods : {
             toPublicJSON : function() {
                 let json = this.toJSON();

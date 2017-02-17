@@ -29,6 +29,11 @@ class UserService {
                 };
             });
     }
+
+    authenticateToken(token) {
+        return this._repository.findByToken(token)
+            .then(user => this._validator.validateIfUserWasFoundByToken(user));
+    }
 }
 
 module.exports = () => UserService;
