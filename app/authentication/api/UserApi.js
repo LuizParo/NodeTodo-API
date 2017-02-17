@@ -21,7 +21,7 @@ class UserApi {
 
     login(req, res) {
         return this._service.login(req.body)
-            .then(user => res.json(user.toPublicJSON()))
+            .then(data => res.header('auth', data.token).json(data.user.toPublicJSON()))
             .catch(error => {
                 let errorResponse = this._errorHandler.handle(error);
                 res.status(errorResponse.status).json(errorResponse);

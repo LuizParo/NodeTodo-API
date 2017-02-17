@@ -21,7 +21,13 @@ class UserService {
         return this._validator.assertIfFiltersAreValid(filters)
             .then(user => this._repository.find(filters))
             .then(user => this._validator.assertIfExists(user, filters.email))
-            .then(user => user.checkIfPasswordMatches(filters.password));
+            .then(user => user.checkIfPasswordMatches(filters.password))
+            .then(user => {
+                return {
+                    user : user,
+                    token : user.generateToken('authentication')
+                };
+            });
     }
 }
 

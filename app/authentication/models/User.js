@@ -3,6 +3,8 @@
 let Sequelize = require('sequelize');
 let bcrypt = require('bcrypt');
 let _ = require('underscore');
+let cryptojs = require('crypto-js');
+let jwt = require('jsonwebtoken');
 
 let database = require('../../../config/database');
 let InvalidCredentialsException = require('../exceptions/InvalidCredentialsException');
@@ -62,6 +64,22 @@ module.exports = () => {
                 }
 
                 return this;
+            },
+
+            generateToken : function(type) {
+                if(!_.isString(type)) {
+                    throw new Error('The type of the token to be generated must be a string!');
+                }
+
+                let stringData = JSON.stringify({
+                    id : this.get('id'),
+                    type : type
+                });
+
+                let encryptedData = cryptojs.AES.encrypt(stringData, 'abc123!@#!').toString();
+                let token = jwt.sign({token : encryptedData}, 'qwerty098');
+
+                return token;
             }
         }
     });
