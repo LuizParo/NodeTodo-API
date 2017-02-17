@@ -20,5 +20,12 @@ module.exports = () => {
         }
     });
 
+    let User = database.define('user', {
+        email : Sequelize.STRING
+    });
+
+    Todo.belongsTo(User);
+    User.hasMany(Todo);
+
     return Todo;
 };
