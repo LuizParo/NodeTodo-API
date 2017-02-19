@@ -30,9 +30,10 @@ class TodoApi {
     }
 
     save(req, res) {
-        let body = req.body;
+        let todoDTO = req.body;
+        todoDTO.user = req.user;
 
-        this._service.save(body)
+        this._service.save(todoDTO)
             .then(todoId => {
                 res.location(`${req.get('host')}/todos/${todoId}`);
                 res.sendStatus(201);

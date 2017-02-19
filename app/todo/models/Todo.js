@@ -3,7 +3,7 @@
 let Sequelize = require('sequelize');
 let database = require('../../../config/database');
 
-module.exports = () => {
+module.exports = (app) => {
     let Todo = database.define('todo', {
         description : {
             type : Sequelize.STRING,
@@ -20,9 +20,7 @@ module.exports = () => {
         }
     });
 
-    let User = database.define('user', {
-        email : Sequelize.STRING
-    });
+    let User = app.authentication.models.User;
 
     Todo.belongsTo(User);
     User.hasMany(Todo);

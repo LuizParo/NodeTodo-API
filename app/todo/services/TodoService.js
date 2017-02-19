@@ -19,10 +19,12 @@ class TodoService {
     save(todoDTO) {
         let todo = {
             description : todoDTO.description,
-            completed : todoDTO.completed
+            completed : todoDTO.completed,
         };
 
         return this._repository.save(todo)
+            .then(todo => todoDTO.user.addTodo(todo))
+            .then(todo => todo.reload())
             .then(todo => todo.id);
     }
 

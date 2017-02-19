@@ -2,8 +2,9 @@
 
 module.exports = app => {
     let errorHandler = new app.utils.ErrorHandler();
+
     let todoServiceFactory = new app.todo.factories.TodoServiceFactory(app);
-    let todoService = todoServiceFactory.create(app);
+    let todoService = todoServiceFactory.create();
     let api = new app.todo.api.TodoApi(todoService, errorHandler);
 
     let userServiceFactory = new app.authentication.factories.UserServiceFactory(app);
