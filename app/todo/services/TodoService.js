@@ -11,9 +11,9 @@ class TodoService {
         return this._repository.findAll(filters);
     }
 
-    findById(id) {
-        return this._repository.findById(id)
-            .then(todo => this._validator.assertIfExists(todo, id));
+    findById(filters) {
+        return this._repository.findById(filters)
+            .then(todo => this._validator.assertIfExists(todo, filters.id));
     }
 
     save(todoDTO) {
@@ -39,14 +39,16 @@ class TodoService {
             updatedTodo.completed = todoDTO.completed;
         }
 
-        return this._repository.findById(id)
+        updatedTodo.user = todoDTO.user;
+
+        return this._repository.findById({id : id, userId : todoDTO.user.id})
             .then(todo => this._validator.assertIfExists(todo, id))
             .then(todo => todo.update(updatedTodo));
     }
 
-    delete(id) {
-        return this._repository.deleteById(id)
-            .then(rowsDeleted => this._validator.assertRowsNotEmpty(rowsDeleted, id));
+    delete(filters) {
+        return this._repository.deleteById(filters)
+            .then(rowsDeleted => this._validator.assertRowsNotEmpty(rowsDeleted, filters.id));
     }
 }
 

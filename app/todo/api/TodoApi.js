@@ -12,7 +12,10 @@ class TodoApi {
     }
 
     list(req, res) {
-        this._service.list(req.query)
+        let filters = req.query;
+        filters.userId = req.user.id;
+
+        this._service.list(filters)
             .then(todos => res.json(todos))
             .catch(error => {
                 let errorResponse = this._errorHandler.handle(error);
@@ -21,7 +24,12 @@ class TodoApi {
     }
 
     findById(req, res) {
-        this._service.findById(req.params.id)
+        let filters = {
+            id : req.params.id,
+            userId : req.user.id
+        }
+
+        this._service.findById(filters)
             .then(todo => res.json(todo))
             .catch(error => {
                 let errorResponse = this._errorHandler.handle(error);
@@ -45,7 +53,10 @@ class TodoApi {
     }
 
     update(req, res) {
-        this._service.update(req.params.id, req.body)
+        let todoDTO = req.body;
+        todoDTO.user = req.user;
+
+        this._service.update(req.params.id, todoDTO)
             .then(() => res.sendStatus(204))
             .catch(error => {
                 let errorResponse = this._errorHandler.handle(error);
@@ -54,7 +65,12 @@ class TodoApi {
     }
 
     delete(req, res) {
-        this._service.delete(req.params.id)
+        let filters = {
+            id : req.params.id,
+            userId : req.user.id
+        }
+
+        this._service.delete(filters)
             .then(() => res.sendStatus(204))
             .catch(error => {
                 let errorResponse = this._errorHandler.handle(error);

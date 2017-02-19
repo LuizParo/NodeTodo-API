@@ -10,12 +10,17 @@ class TodoRepository {
         return this._todo.create(todo);
     }
 
-    findById(id) {
-        return this._todo.findById(id);
+    findById(filters) {
+        return this._todo.findOne({
+            where : {
+                id : filters.id,
+                userId : filters.userId
+            }
+        });
     }
 
     findAll(filters) {
-        let where = {};
+        let where = {userId : filters.userId};
 
         if(filters.hasOwnProperty('completed')) {
             where.completed = filters.completed === 'true';
@@ -30,10 +35,11 @@ class TodoRepository {
         return this._todo.findAll({where : where});
     }
 
-    deleteById(id) {
+    deleteById(filters) {
         return this._todo.destroy({
             where : {
-                id : id
+                id : filters.id,
+                userId : filters.userId
             }
         });
     }
