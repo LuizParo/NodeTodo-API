@@ -2,8 +2,9 @@
 
 class UserService {
 
-    constructor(repository, validator) {
-        this._repository = repository;
+    constructor(userRepository, tokenRepository, validator) {
+        this._userRepository = userRepository;
+        this._tokenRepository = tokenRepository;
         this._validator = validator;
     }
 
@@ -13,25 +14,32 @@ class UserService {
             password : userDTO.password
         };
 
-        return this._repository.save(user)
+        return this._userRepository.save(user)
             .then(todo => todo.id);
     }
 
     login(filters) {
+        let loggedUser;
+
         return this._validator.assertIfFiltersAreValid(filters)
-            .then(user => this._repository.find(filters))
+            .then(user => this._userRepository.find(filters))
             .then(user => this._validator.assertIfExists(user, filters.email))
             .then(user => user.checkIfPasswordMatches(filters.password))
             .then(user => {
+                loggedUser = user;
+                return user.generateToken('authentication');
+            })
+            .then(token => this._tokenRepository.save(token))
+            .then(tokenIntance => {
                 return {
-                    user : user,
-                    token : user.generateToken('authentication')
+                    user : loggedUser,
+                    token : tokenIntance.token
                 };
             });
     }
 
     authenticateToken(token) {
-        return this._repository.findByToken(token)
+        return this._userRepository.findByToken(token)
             .then(user => this._validator.validateIfUserWasFoundByToken(user));
     }
 }
