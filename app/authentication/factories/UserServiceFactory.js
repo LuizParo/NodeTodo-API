@@ -10,11 +10,13 @@ class UserServiceFactory {
         let user = this._app.authentication.models.User;
         let token = this._app.authentication.models.Token;
 
-        let validator = new this._app.authentication.validators.UserValidator();
+        let userValidator = new this._app.authentication.validators.UserValidator();
+        let tokenValidator = new this._app.authentication.validators.TokenValidator();
+
         let userRepository = new this._app.authentication.repositories.UserRepository(user);
         let tokenRepository = new this._app.authentication.repositories.TokenRepository(token);
 
-        return new this._app.authentication.services.UserService(userRepository, tokenRepository, validator);
+        return new this._app.authentication.services.UserService(userRepository, tokenRepository, userValidator, tokenValidator);
     }
 }
 

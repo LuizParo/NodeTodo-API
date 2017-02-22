@@ -9,8 +9,10 @@ class AuthenticationMiddleware {
 
     requireAuthentication(req, res, next) {
         this._userService.authenticateToken(req.get('Auth'))
-            .then(user => {
-                req.user = user;
+            .then(data => {
+                req.user = data.user;
+                req.token = data.token;
+
                 next();
             })
             .catch(error => {

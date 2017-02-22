@@ -55,6 +55,7 @@ module.exports = () => {
         classMethods : {
             findByToken : function(token) {
                 return new Promise((resolve, reject) => {
+                    console.log(JSON.stringify(token));
                     try {
                         if(!token) {
                             reject({

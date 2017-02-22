@@ -2,10 +2,11 @@
 
 class UserService {
 
-    constructor(userRepository, tokenRepository, validator) {
+    constructor(userRepository, tokenRepository, userValidator, tokenValidator) {
         this._userRepository = userRepository;
         this._tokenRepository = tokenRepository;
-        this._validator = validator;
+        this._userValidator = userValidator;
+        this._tokenValidator = tokenValidator;
     }
 
     save(userDTO) {
@@ -21,9 +22,9 @@ class UserService {
     login(filters) {
         let loggedUser;
 
-        return this._validator.assertIfFiltersAreValid(filters)
+        return this._userValidator.assertIfFiltersAreValid(filters)
             .then(user => this._userRepository.find(filters))
-            .then(user => this._validator.assertIfExists(user, filters.email))
+            .then(user => this._userValidator.assertIfExists(user, filters.email))
             .then(user => user.checkIfPasswordMatches(filters.password))
             .then(user => {
                 loggedUser = user;
@@ -38,9 +39,28 @@ class UserService {
             });
     }
 
+    logout(token) {
+        return this._tokenRepository.remove(token);
+    }
+
     authenticateToken(token) {
-        return this._userRepository.findByToken(token)
-            .then(user => this._validator.validateIfUserWasFoundByToken(user));
+        let recoveredToken;
+
+        return this._tokenRepository.findByToken(token)
+            .then(tokenInstance => this._tokenValidator.validateIfTokenWasFound(tokenInstance))
+            .then(tokenInstance => {
+                recoveredToken = tokenInstance;
+                return this._userRepository.findByToken(token)
+            })
+            .then(user => this._userValidator.validateIfUserWasFoundByToken(user))
+            .then(user => {
+                console.log(JSON.stringify(recoveredToken));
+
+                return {
+                    user : user,
+                    token : recoveredToken
+                };
+            });
     }
 }
 
